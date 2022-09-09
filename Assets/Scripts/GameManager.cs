@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
         
     }
 
+    //Spawn cells with an adjustable size
     public void SpawnCells()
     {
         for(int j = 0; j < arrayY; j++)
@@ -35,7 +36,8 @@ public class GameManager : MonoBehaviour
                 position.x = xPosition;
                 position.y = yPosition;
                 GameObject cellNew = Instantiate(cell, position, Quaternion.identity, cellsParent.transform);
-                cellNew.name = $"{j} {i}"; 
+                cellNew.name = $"{j} {i}";
+                cellNew.GetComponent<SpriteRenderer>().color = Color.gray;
             }
         }
     }
