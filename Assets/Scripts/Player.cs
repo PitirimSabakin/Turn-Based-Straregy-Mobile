@@ -9,6 +9,8 @@ public class Player : MonoBehaviour
 
     private GameObject cellsParent;
 
+    private List<GameObject> cellsMoveList = new List<GameObject>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,23 +30,50 @@ public class Player : MonoBehaviour
     //Change color of cell, which player can move on it
     void ChangeColorCell()
     {
+        //clear list of cells
+        cellsMoveList.Clear();
+
         //get coordinates cell which player stay it
         string[] xy = transform.parent.name.Split(new char[] { ' ' });
         int x = int.Parse(xy[1]);
         int y = int.Parse(xy[0]);
         for (int i = 0; i < cellsParent.transform.childCount; i++)
         {
+            GameObject cell = cellsParent.transform.GetChild(i).gameObject;
+            cell.GetComponent<SpriteRenderer>().color = Color.gray;
+
             //get coordintates cell in cycle
-            string[] xy_ = cellsParent.transform.GetChild(i).name.Split(new char[] { ' ' });
+            string[] xy_ = cell.name.Split(new char[] { ' ' });
             int x_ = int.Parse(xy_[1]);
             int y_ = int.Parse(xy_[0]);
 
             //checking whether the player can move into this cell
             if ((Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= moveSpeed)
             {
-                cellsParent.transform.GetChild(i).GetComponent<SpriteRenderer>().color = Color.white;
+                cell.GetComponent<SpriteRenderer>().color = Color.white;
+                cellsMoveList.Add(cell);
             }
         }
+    }
+
+    //Checking, is can player move in this cell
+    public void CheckCellInMoveList(GameObject cell)
+    {
+        for(int i = 0; i < cellsMoveList.Count; i++)
+        {
+            if(cell == cellsMoveList[i])
+            {
+                MovePlayerOnCell(cell);
+            }
+        }
+    }
+
+    //move player in cell
+    private void MovePlayerOnCell(GameObject cell)
+    {
+        transform.position = cell.transform.position;
+        transform.parent = cell.transform;
+        ChangeColorCell();
     }
 
     class PlayerUnit

@@ -10,7 +10,11 @@ public class GUIscript : MonoBehaviour
     private Button down;
     private Button right;
 
+    private Button move;
+
     private GameObject targetCell;
+
+    private Player playerScript;
 
     // Start is called before the first frame update
     void Start()
@@ -20,13 +24,17 @@ public class GUIscript : MonoBehaviour
         left = GameObject.Find("Left").GetComponent<Button>();
         right = GameObject.Find("Right").GetComponent<Button>();
         down = GameObject.Find("Down").GetComponent<Button>();
+        move = GameObject.Find("Move").GetComponent<Button>();
 
         targetCell = GameObject.Find("TargetCell");
+
+        playerScript = GameObject.Find("Player").GetComponent<Player>();
 
         up.onClick.AddListener(PressUpbutton);
         left.onClick.AddListener(PressLeftbutton);
         right.onClick.AddListener (PressRightbutton);
         down.onClick.AddListener(PressDownbutton);
+        move.onClick.AddListener(PressMoveButton);
     }
 
     //Moving target. Can choose need cell
@@ -68,6 +76,12 @@ public class GUIscript : MonoBehaviour
             targetCell.transform.parent = cell.transform;
         }
     }  
+
+    //When the move button is pressed, targetCell passed for checking
+    void PressMoveButton()
+    {
+        playerScript.CheckCellInMoveList(targetCell.transform.parent.gameObject);
+    }
 
     void PressUpbutton()
     {
