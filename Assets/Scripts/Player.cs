@@ -48,7 +48,7 @@ public class Player : MonoBehaviour
             int y_ = int.Parse(xy_[0]);
 
             //checking whether the player can move into this cell
-            if ((Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= moveSpeed)
+            if ((Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= moveSpeed && transform.parent.gameObject != cell)
             {
                 cell.GetComponent<SpriteRenderer>().color = Color.white;
                 cellsMoveList.Add(cell);
@@ -71,7 +71,9 @@ public class Player : MonoBehaviour
     //move player in cell
     private void MovePlayerOnCell(GameObject cell)
     {
-        transform.position = cell.transform.position;
+        Vector3 pos = cell.transform.position;
+        pos.y += 0.3f;
+        transform.position = pos;
         transform.parent = cell.transform;
         ChangeColorCell();
     }
