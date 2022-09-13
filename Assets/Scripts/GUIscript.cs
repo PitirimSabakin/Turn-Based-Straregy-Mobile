@@ -80,7 +80,7 @@ public class GUIscript : MonoBehaviour
     //When the move button is pressed, targetCell passed for checking
     void PressMoveButton()
     {
-        playerScript.CheckCellInMoveList(targetCell.transform.parent.gameObject);
+        playerScript.CheckCellInList(targetCell.transform.parent.gameObject);
     }
 
     void PressUpbutton()

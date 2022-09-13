@@ -3798,6 +3798,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2120244513}
     m_Modifications:
+    - target: {fileID: 2484272417616493636, guid: f1c87191f2bc21d418c9c962e889e48a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4289536780867661785, guid: f1c87191f2bc21d418c9c962e889e48a, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -8607,6 +8611,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1036996785}
   - component: {fileID: 1036996786}
+  - component: {fileID: 1036996787}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -8681,6 +8686,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1036996787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036996784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b57d6030900c5a459f31482ea3607cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: Dickhead
+  health: 50
+  armor: 100
+  magresist: 0
 --- !u!1 &1037478662
 GameObject:
   m_ObjectHideFlags: 0
@@ -16209,6 +16230,10 @@ PrefabInstance:
     - target: {fileID: 188348934653137059, guid: e5f9f0892cba89e4e9ec9da4b137602c, type: 3}
       propertyPath: moveSpeed
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 188348934653137059, guid: e5f9f0892cba89e4e9ec9da4b137602c, type: 3}
+      propertyPath: armorPercentPenetration
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 188348934653137060, guid: e5f9f0892cba89e4e9ec9da4b137602c, type: 3}
       propertyPath: m_RootOrder
