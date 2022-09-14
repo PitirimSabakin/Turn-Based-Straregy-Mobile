@@ -10,20 +10,34 @@ public class Player : MonoBehaviour
     [SerializeField] private int damage = 20;
     [SerializeField] private int armorPercentPenetration = 20;
     [SerializeField] private int magresPercentPenetration = 0;
+    [SerializeField] private int health = 50;
+    [SerializeField] private float armor = 0;
+    [SerializeField] private int magresist = 0;
 
     private GameObject cellsParent;
 
     private List<GameObject> cellsMoveList = new List<GameObject>();
     private List<GameObject> cellsAttackList = new List<GameObject>();
 
-    PlayerUnit player;
+    PlayerClass player;
 
     // Start is called before the first frame update
     void Start()
     {
         cellsParent = GameObject.Find("cellsParent");
 
-        player = new PlayerUnit(name, this.gameObject, rangeAttack, moveSpeed, damage, armorPercentPenetration, magresPercentPenetration);
+        player = new PlayerClass(name,
+                                 gameObject,
+                                 rangeAttack,
+                                 moveSpeed,
+                                 damage,
+                                 armorPercentPenetration,
+                                 magresPercentPenetration,
+                                 health,
+                                 armor,
+                                 magresist);
+
+        Global.persons.Add(player);
 
         CellInMoveList();
         CellInAttackList();
@@ -46,7 +60,7 @@ public class Player : MonoBehaviour
 
         //Breadth-first search
         //count of steps for moving to cell
-        for (int step = 1; step <= player.moveSpeed; step++)
+        for (int step = 1; step <= player.MoveSpeed; step++)
         {
             countCells = cellsMoveList.Count;
             for(int i = 0; i <countCells; i++)
@@ -122,7 +136,7 @@ public class Player : MonoBehaviour
                     if(cell.transform.GetChild(j).tag == "Enemy")
                     {
                         Enemy enemy = cell.transform.GetChild(j).GetComponent<Enemy>();
-                        enemy.TakeDamage(player.damage, "ad", player.armorPercentPenetration, player.magresPercentPenetration);
+                        enemy.TakeDamage(player.Damage, "ad", player.ArmorPercentPenetration, player.MagresPercentPenetration);
                     }
                 }
                 return;
@@ -168,24 +182,28 @@ public class Player : MonoBehaviour
         CellInAttackList();
     }
 
-    class PlayerUnit
+    class PlayerClass: Person.PersonClass
     {
-        public string name { get; private set; }    
-        public GameObject objectPlayer { get; private set; }
-        public int rangeAttack { get; private set; }
-        public int moveSpeed { get; private set; }
-        public int damage { get; private set; }
-        public float armorPercentPenetration { get; private set; }
-        public float magresPercentPenetration { get; private set; }
-        public PlayerUnit(string name, GameObject objectPlayer, int rangeAttack, int moveSpeed, int damage, float armorPercentPenetration, float magresPercentPenetration)
+        public PlayerClass(string name,
+                           GameObject objectPlayer,
+                           int rangeAttack,
+                           int moveSpeed,
+                           int damage,
+                           float armorPercentPenetration,
+                           float magresPercentPenetration,
+                           int healtMAX,
+                           float armor,
+                           float magresist) : base(name,
+                                                   objectPlayer,
+                                                   rangeAttack,
+                                                   moveSpeed,
+                                                   damage,
+                                                   armorPercentPenetration,
+                                                   magresPercentPenetration,
+                                                   healtMAX,
+                                                   armor,
+                                                   magresist)
         {
-            this.name = name;
-            this.objectPlayer = objectPlayer;
-            this.rangeAttack = rangeAttack;
-            this.moveSpeed = moveSpeed;
-            this.damage = damage;
-            this.armorPercentPenetration = armorPercentPenetration;
-            this.magresPercentPenetration = magresPercentPenetration;
         }
     }
 }
