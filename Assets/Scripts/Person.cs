@@ -17,6 +17,7 @@ public class Person : MonoBehaviour
         public int HealthCurrent { get; protected set; }
         public float Armor { get; private set; }
         public float Magresit { get; private set; }
+        public bool haveMove = false;
 
         public PersonClass(string name, GameObject objectPerson, int rangeAttack, int moveSpeed, int damage, float armorPercentPenetration, float magresPercentPenetration, int healthMAX, float armor, float magresit)
         {
@@ -32,5 +33,7 @@ public class Person : MonoBehaviour
             Armor = armor;
             Magresit = magresit;
         }
+
+        public abstract void StartRound();
     }
 }

@@ -16,10 +16,13 @@ public class Enemy : MonoBehaviour
 
 
     EnemyClass enemyUnit;
+    static GameManager gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
         enemyUnit = new EnemyClass(name,
                                  gameObject,
                                  rangeAttack,
@@ -44,6 +47,19 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(int damage, string typeDamage, float armorPenetrationPercent, float magPenetrationPercent)
     {
         enemyUnit.TakeDamage(damage, typeDamage, armorPenetrationPercent, magPenetrationPercent);
+    }
+
+    //Method for the test of changing turn
+    void qwe()
+    {
+        StartCoroutine(wait());
+    }
+
+    IEnumerator wait()
+    {
+        yield return new WaitForSeconds(2);
+        gameManager.ChangeTurn();
+        Debug.Log("Change");
     }
 
     class EnemyClass : Person.PersonClass
@@ -100,5 +116,14 @@ public class Enemy : MonoBehaviour
         {
             Destroy(ObjectPerson);
         }
+
+        //the actions of the enemy when his turn begins
+        public override void StartRound()
+        {
+            Debug.Log("Enemy turn");
+            ObjectPerson.GetComponent<Enemy>().qwe();
+        }
+
+        
     }
 }

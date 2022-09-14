@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Person;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,13 +15,29 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        StartRound();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    //Start turn of the first person on the list
+    void StartRound()
+    {
+        Global.persons[0].StartRound();
+    }
+
+    //Delete first person from the list and add him on end of the list
+    public void ChangeTurn()
+    {
+        PersonClass buff = Global.persons[0];
+        buff.haveMove = false;
+        Global.persons.RemoveAt(0);
+        Global.persons.Add(buff);
+        StartRound();
     }
 
     //Spawn cells with an adjustable size

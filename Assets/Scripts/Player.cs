@@ -20,11 +20,13 @@ public class Player : MonoBehaviour
     private List<GameObject> cellsAttackList = new List<GameObject>();
 
     PlayerClass player;
+    GameManager gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
         cellsParent = GameObject.Find("cellsParent");
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         player = new PlayerClass(name,
                                  gameObject,
@@ -39,12 +41,10 @@ public class Player : MonoBehaviour
 
         Global.persons.Add(player);
 
-        CellInMoveList();
-        CellInAttackList();
     }
 
     //Change color of cell, which player can move on it and add in move list. Breadth-first search
-    void CellInMoveList()
+     void CellInMoveList()
     {
         //clear list of cells
         CleanCells();
@@ -137,6 +137,9 @@ public class Player : MonoBehaviour
                     {
                         Enemy enemy = cell.transform.GetChild(j).GetComponent<Enemy>();
                         enemy.TakeDamage(player.Damage, "ad", player.ArmorPercentPenetration, player.MagresPercentPenetration);
+                        //Turn go the next person after attack
+                        CleanCells();
+                        gameManager.ChangeTurn();
                     }
                 }
                 return;
@@ -169,6 +172,8 @@ public class Player : MonoBehaviour
                 }
             }
         }
+        //if player can not do anything turn go to the next person
+        if (cellsAttackList.Count == 0 && !player.haveMove) gameManager.ChangeTurn();
     }
 
     //move player in cell
@@ -178,7 +183,10 @@ public class Player : MonoBehaviour
         pos.y += 0.3f;
         transform.position = pos;
         transform.parent = cell.transform;
-        CellInMoveList();
+
+        //Player can only attack after movement
+        player.haveMove = false;
+        CleanCells();
         CellInAttackList();
     }
 
@@ -204,6 +212,13 @@ public class Player : MonoBehaviour
                                                    armor,
                                                    magresist)
         {
+        }
+
+        public override void StartRound()
+        {
+            haveMove = true;
+            ObjectPerson.GetComponent<Player>().CellInMoveList();
+            ObjectPerson.GetComponent<Player>().CellInAttackList();
         }
     }
 }
