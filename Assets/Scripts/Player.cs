@@ -44,7 +44,7 @@ public class Player : MonoBehaviour
     }
 
     //Change color of cell, which player can move on it and add in move list. Breadth-first search
-     void CellInMoveList()
+    void CellInMoveList()
     {
         //clear list of cells
         CleanCells();
@@ -105,7 +105,7 @@ public class Player : MonoBehaviour
     }
 
     //Make all cells gray and clean the list
-    void CleanCells()
+    public void CleanCells()
     {
         for(int i = 0; i < cellsParent.transform.childCount; i++)
         {

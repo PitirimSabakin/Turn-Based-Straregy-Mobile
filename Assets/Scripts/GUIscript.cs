@@ -9,10 +9,11 @@ public class GUIscript : MonoBehaviour
     private Button left;
     private Button down;
     private Button right;
-
     private Button move;
+    private Button skipTurn;
 
     private GameObject targetCell;
+    private GameManager gameManager;
 
     private Player playerScript;
 
@@ -25,8 +26,10 @@ public class GUIscript : MonoBehaviour
         right = GameObject.Find("Right").GetComponent<Button>();
         down = GameObject.Find("Down").GetComponent<Button>();
         move = GameObject.Find("Move").GetComponent<Button>();
+        skipTurn = GameObject.Find("SkipButton").GetComponent<Button>();
 
         targetCell = GameObject.Find("TargetCell");
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         playerScript = GameObject.Find("Player").GetComponent<Player>();
 
@@ -35,6 +38,7 @@ public class GUIscript : MonoBehaviour
         right.onClick.AddListener (PressRightbutton);
         down.onClick.AddListener(PressDownbutton);
         move.onClick.AddListener(PressMoveButton);
+        skipTurn.onClick.AddListener(PresSkipButton);
     }
 
     //Moving target. Can choose need cell
@@ -77,9 +81,16 @@ public class GUIscript : MonoBehaviour
         }
     }  
 
+    //Skip turn
+    void PresSkipButton()
+    {
+        Global.persons[0].ObjectPerson.GetComponent<Player>().CleanCells();
+        gameManager.ChangeTurn();
+    }
+
     //When the move button is pressed, targetCell passed for checking
     void PressMoveButton()
-    {
+    {    
         playerScript.CheckCellInList(targetCell.transform.parent.gameObject);
     }
 

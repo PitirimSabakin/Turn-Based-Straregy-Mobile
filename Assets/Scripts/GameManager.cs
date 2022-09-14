@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject cell;
 
     [SerializeField] private GameObject cellsParent;
+    [SerializeField] private GameObject buttons;
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +28,11 @@ public class GameManager : MonoBehaviour
     //Start turn of the first person on the list
     void StartRound()
     {
+        //Disable GUI buttons if it is the enemy turn now
+        if (Global.persons[0].ObjectPerson.tag == "Enemy")
+        {
+            buttons.SetActive(false);
+        }else buttons.SetActive(true);
         Global.persons[0].StartRound();
     }
 
