@@ -18,6 +18,8 @@ public class GUIscript : MonoBehaviour
 
     private Player playerScript;
 
+    private GameObject cellNow;
+
     [SerializeField] private GameObject panelOfSpells;
 
     // Start is called before the first frame update
@@ -86,12 +88,60 @@ public class GUIscript : MonoBehaviour
         }
     }  
 
+    void ChooseCellOnPanelOfSpells(string direction)
+    {
+        //Definition of current cell
+        string[] xy = cellNow.name.Split(new char[] { ' ' });
+        int x = int.Parse(xy[1]);
+        int y = int.Parse(xy[0]);
+
+        string newTargetCellName = "";
+
+        //Definition the name of the cell to which the target will be moved
+        if (direction == "Up")
+        {
+            newTargetCellName = $"{y - 1} {x}";
+        }
+
+        if (direction == "Left")
+        {
+            newTargetCellName = $"{y} {x - 1}";
+        }
+
+        if (direction == "Down")
+        {
+            newTargetCellName = $"{y + 1} {x}";
+        }
+
+        if (direction == "Right")
+        {
+            newTargetCellName = $"{y} {x + 1}";
+        }
+
+        for(int i = 0; i < cellNow.transform.parent.childCount; i++)
+        {
+            GameObject cell = cellNow.transform.parent.GetChild(i).gameObject;
+            if(cell.name == newTargetCellName)
+            {
+                cellNow.GetComponent<Image>().color = Color.gray;
+                cellNow = cell;
+                cellNow.GetComponent<Image>().color = Color.white;
+            }
+        }
+    }
+
     //Open the panel with magick spells
     void PressSpellBookButton()
     {
         panelOfSpells.SetActive(!panelOfSpells.activeInHierarchy);
-        if(panelOfSpells.activeInHierarchy)
-        panelOfSpells.GetComponent<PanelOfSpells>().FillCellsWithSpells();
+        if (panelOfSpells.activeInHierarchy)
+        {
+            panelOfSpells.GetComponent<PanelOfSpells>().FillCellsWithSpells();
+            
+            //Make the first cell white
+            cellNow = panelOfSpells.transform.GetChild(0).GetChild(0).gameObject;
+            cellNow.GetComponent<Image>().color = Color.white;
+        }else cellNow.GetComponent<Image>().color = Color.gray;
     }
 
     //Skip turn
@@ -103,31 +153,50 @@ public class GUIscript : MonoBehaviour
 
     //When the move button is pressed, targetCell passed for checking
     void PressMoveButton()
-    {    
+    {
+        if (panelOfSpells.activeInHierarchy)
+        {
+            for(int i = 0; i < cellNow.transform.childCount; i++)
+            {
+                for(int j = 0; j < Global.persons[0].listMagickSpells.Count; j++)
+                {
+                    if (cellNow.transform.GetChild(i).name == Global.persons[0].listMagickSpells[j].Name)
+                    {
+                        Global.persons[0].ObjectPerson.GetComponent<Player>().CellsInMagickList(Global.persons[0].listMagickSpells[j]);
+                        panelOfSpells.SetActive(false);
+                    }
+                }
+                
+            }
+        }else
         playerScript.CheckCellInList(targetCell.transform.parent.gameObject);
     }
 
     void PressUpbutton()
     {
         string direction = "Up";
-        ChooseCell(direction);
+        if (panelOfSpells.activeInHierarchy) ChooseCellOnPanelOfSpells(direction);
+        else ChooseCell(direction);
     }
 
     void PressLeftbutton()
     {
         string direction = "Left";
-        ChooseCell(direction);
+        if (panelOfSpells.activeInHierarchy) ChooseCellOnPanelOfSpells(direction);
+        else ChooseCell(direction);
     }
 
     void PressRightbutton()
     {
         string direction = "Right";
-        ChooseCell(direction);
+        if (panelOfSpells.activeInHierarchy) ChooseCellOnPanelOfSpells(direction);
+        else ChooseCell(direction);
     }
 
     void PressDownbutton()
     {
         string direction = "Down";
-        ChooseCell(direction);
+        if (panelOfSpells.activeInHierarchy) ChooseCellOnPanelOfSpells(direction);
+        else ChooseCell(direction);
     }
 }

@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
 
     private List<GameObject> cellsMoveList = new List<GameObject>();
     private List<GameObject> cellsAttackList = new List<GameObject>();
+    private List<GameObject> cellsMagickList = new List<GameObject> ();
 
     PlayerClass player;
     GameManager gameManager;
@@ -166,15 +167,40 @@ public class Player : MonoBehaviour
 
             for (int c = 0; c < cell.transform.childCount; c++)
             {
-                if(cell.transform.GetChild(c).tag == "Enemy" && (Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) == 1)
+                if(cell.transform.GetChild(c).tag == "Enemy" && (Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= player.RangeAttack)
                 {
                     cellsAttackList.Add(cell);
                     cell.GetComponent<SpriteRenderer>().color = Color.red;
                 }
             }
         }
-        //if player can not do anything turn go to the next person
-        if (cellsAttackList.Count == 0 && !player.haveMove) gameManager.ChangeTurn();
+    }
+
+    //Add cell in the list if enemy in range of magick spell
+    public void CellsInMagickList(MagickSpellClass spell)
+    {
+        //get coordinates cell which player stay it
+        string[] xy = transform.parent.name.Split(new char[] { ' ' });
+        int x = int.Parse(xy[1]);
+        int y = int.Parse(xy[0]);
+
+        for (int i = 0; i < cellsParent.transform.childCount; i++)
+        {
+            GameObject cell = cellsParent.transform.GetChild(i).gameObject;
+
+            string[] xy_ = cell.name.Split(new char[] { ' ' });
+            int x_ = int.Parse(xy_[1]);
+            int y_ = int.Parse(xy_[0]);
+
+            for (int c = 0; c < cell.transform.childCount; c++)
+            {
+                if (cell.transform.GetChild(c).tag == "Enemy" && (Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= spell.Range)
+                {
+                    cellsMagickList.Add(cell);
+                    cell.GetComponent<SpriteRenderer>().color = Color.blue;
+                }
+            }
+        }
     }
 
     //move player in cell
