@@ -11,11 +11,14 @@ public class GUIscript : MonoBehaviour
     private Button right;
     private Button move;
     private Button skipTurn;
+    private Button spellbook;
 
     private GameObject targetCell;
     private GameManager gameManager;
 
     private Player playerScript;
+
+    [SerializeField] private GameObject panelOfSpells;
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +30,7 @@ public class GUIscript : MonoBehaviour
         down = GameObject.Find("Down").GetComponent<Button>();
         move = GameObject.Find("Move").GetComponent<Button>();
         skipTurn = GameObject.Find("SkipButton").GetComponent<Button>();
+        spellbook = GameObject.Find("Spellbook").GetComponent<Button>();
 
         targetCell = GameObject.Find("TargetCell");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -39,6 +43,7 @@ public class GUIscript : MonoBehaviour
         down.onClick.AddListener(PressDownbutton);
         move.onClick.AddListener(PressMoveButton);
         skipTurn.onClick.AddListener(PresSkipButton);
+        spellbook.onClick.AddListener(PressSpellBookButton);
     }
 
     //Moving target. Can choose need cell
@@ -80,6 +85,14 @@ public class GUIscript : MonoBehaviour
             targetCell.transform.parent = cell.transform;
         }
     }  
+
+    //Open the panel with magick spells
+    void PressSpellBookButton()
+    {
+        panelOfSpells.SetActive(!panelOfSpells.activeInHierarchy);
+        if(panelOfSpells.activeInHierarchy)
+        panelOfSpells.GetComponent<PanelOfSpells>().FillCellsWithSpells();
+    }
 
     //Skip turn
     void PresSkipButton()

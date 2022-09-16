@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static MagickSpell;
 
 public class Player : MonoBehaviour
 {
@@ -212,13 +213,18 @@ public class Player : MonoBehaviour
                                                    armor,
                                                    magresist)
         {
-        }
+        }        
 
         public override void StartRound()
         {
             haveMove = true;
             ObjectPerson.GetComponent<Player>().CellInMoveList();
             ObjectPerson.GetComponent<Player>().CellInAttackList();
+        }
+
+        public override void AddSpell(MagickSpellClass spell)
+        {
+            listMagickSpells.Add(spell);
         }
     }
 }

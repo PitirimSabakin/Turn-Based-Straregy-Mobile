@@ -124,6 +124,9 @@ public class Enemy : MonoBehaviour
             ObjectPerson.GetComponent<Enemy>().qwe();
         }
 
-        
+        public override void AddSpell(MagickSpell.MagickSpellClass spell)
+        {
+            
+        }
     }
 }

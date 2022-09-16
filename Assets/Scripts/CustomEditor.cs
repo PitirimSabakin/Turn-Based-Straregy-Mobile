@@ -21,5 +21,7 @@ public class MyCustomEditor : Editor
         {
             gm.DestroyCells();
         }
+
+        
     }
 }

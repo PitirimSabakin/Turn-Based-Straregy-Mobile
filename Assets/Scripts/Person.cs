@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static MagickSpell;
 
 public class Person : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class Person : MonoBehaviour
         public int HealthCurrent { get; protected set; }
         public float Armor { get; private set; }
         public float Magresit { get; private set; }
+
+        public List<MagickSpellClass> listMagickSpells = new List<MagickSpellClass>();
         public bool haveMove = false;
 
         public PersonClass(string name, GameObject objectPerson, int rangeAttack, int moveSpeed, int damage, float armorPercentPenetration, float magresPercentPenetration, int healthMAX, float armor, float magresit)
@@ -35,5 +38,7 @@ public class Person : MonoBehaviour
         }
 
         public abstract void StartRound();
+
+        public abstract void AddSpell(MagickSpellClass spell);
     }
 }
