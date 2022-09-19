@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static MagickSpell;
+using static SkillScript;
 using static Person;
 
 public class GameManager : MonoBehaviour
@@ -13,31 +13,11 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject cellsParent;
     [SerializeField] private GameObject buttons;
-    [SerializeField] private List<Sprite> listOfSprite;
-
-    private List<MagickSpellClass> listAllMagickSpells = new List<MagickSpellClass>();
-
 
     // Start is called before the first frame update
     void Start()
     {
-        SpellsInlist();
         StartRound();
-    }
-
-    //Add spells in the list of all spells in game
-    void SpellsInlist()
-    {
-        Sprite spriteSpell = null;
-        MagickSpellClass spell;
-        for (int i = 0; i< listOfSprite.Count; i++)
-        {
-            if (listOfSprite[i].name == "fireball") spriteSpell = listOfSprite[i];   
-        }
-        spell = new MagickSpellClass("fireball", 15, 4, spriteSpell);
-        listAllMagickSpells.Add(spell);
-
-        Global.persons[0].AddSpell(spell);
     }
 
     //Start turn of the first person on the list

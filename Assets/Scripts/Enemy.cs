@@ -19,7 +19,7 @@ public class Enemy : MonoBehaviour
     static GameManager gameManager;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
     }
 
     //Get damage from player and send to EnemyClass
-    public void TakeDamage(int damage, string typeDamage, float armorPenetrationPercent, float magPenetrationPercent)
+    public void TakeDamage(int damage, SkillScript.TypeDamage typeDamage, float armorPenetrationPercent, float magPenetrationPercent)
     {
         enemyUnit.TakeDamage(damage, typeDamage, armorPenetrationPercent, magPenetrationPercent);
     }
@@ -87,17 +87,17 @@ public class Enemy : MonoBehaviour
         }
 
         //the damage decreases depending on the protective indicators
-        public void TakeDamage(int damage, string typeDamage ,float armorPenetrationPercent, float magPenetrationPercent)
+        public void TakeDamage(int damage, SkillScript.TypeDamage typeDamage ,float armorPenetrationPercent, float magPenetrationPercent)
         {
             float coefDamage = 0;
-            if(typeDamage == "ad")
+            if(typeDamage == SkillScript.TypeDamage.Physical)
             {
                 float newArmor = (int)(Armor - Armor / 100 * armorPenetrationPercent);
                 coefDamage = (1f - 100f / (100f + newArmor)) * 100f;
             }
-            else if(typeDamage == "ap")
+            else if(typeDamage == SkillScript.TypeDamage.Magick)
             {
-                float newMagres = (int)(Magresit - Magresit / 100 * armorPenetrationPercent);
+                float newMagres = (int)(Magresit - Magresit / 100 * magPenetrationPercent);
                 coefDamage = (1f - 100f / (100f + newMagres)) * 100f;
             }
             
@@ -124,7 +124,7 @@ public class Enemy : MonoBehaviour
             ObjectPerson.GetComponent<Enemy>().qwe();
         }
 
-        public override void AddSpell(MagickSpell.MagickSpellClass spell)
+        public override void AddSkill(SkillScript.Skill spell, int index)
         {
             
         }

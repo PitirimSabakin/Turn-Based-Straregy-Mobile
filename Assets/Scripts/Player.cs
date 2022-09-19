@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static MagickSpell;
+using static SkillScript;
 
 public class Player : MonoBehaviour
 {
@@ -14,19 +14,21 @@ public class Player : MonoBehaviour
     [SerializeField] private int health = 50;
     [SerializeField] private float armor = 0;
     [SerializeField] private int magresist = 0;
+    [SerializeField] private List<Sprite> listOfSprite;
 
     private GameObject cellsParent;
+    private GUIscript canvas;
 
     private List<GameObject> cellsMoveList = new List<GameObject>();
     private List<GameObject> cellsAttackList = new List<GameObject>();
-    private List<GameObject> cellsMagickList = new List<GameObject> ();
 
     PlayerClass player;
     GameManager gameManager;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        canvas = GameObject.Find("Canvas").GetComponent<GUIscript>();
         cellsParent = GameObject.Find("cellsParent");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
@@ -40,6 +42,11 @@ public class Player : MonoBehaviour
                                  health,
                                  armor,
                                  magresist);
+
+        Skill skill = new Skill("sword", 10, 1, TypeDamage.Physical, 0, listOfSprite[0]);        
+        player.AddSkill(skill, 0);
+        skill = new Skill("fireball", 15, 3, TypeDamage.Magick, 2, listOfSprite[1]);
+        player.AddSkill(skill, 1);
 
         Global.persons.Add(player);
 
@@ -58,13 +65,12 @@ public class Player : MonoBehaviour
 
         //Add the cell on which the player is located
         cellsMoveList.Add(transform.parent.gameObject);
-        int countCells = cellsMoveList.Count;
 
         //Breadth-first search
         //count of steps for moving to cell
         for (int step = 1; step <= player.MoveSpeed; step++)
         {
-            countCells = cellsMoveList.Count;
+            int countCells = cellsMoveList.Count;
             for(int i = 0; i <countCells; i++)
             {
                 xy = cellsMoveList[i].name.Split(new char[] { ' ' });
@@ -138,7 +144,8 @@ public class Player : MonoBehaviour
                     if(cell.transform.GetChild(j).tag == "Enemy")
                     {
                         Enemy enemy = cell.transform.GetChild(j).GetComponent<Enemy>();
-                        enemy.TakeDamage(player.Damage, "ad", player.ArmorPercentPenetration, player.MagresPercentPenetration);
+                        enemy.TakeDamage(player.Skill.Damage, player.Skill.TypeDamage, player.ArmorPercentPenetration, player.MagresPercentPenetration);
+                        player.Skill.GoToCooldown();
                         //Turn go the next person after attack
                         CleanCells();
                         gameManager.ChangeTurn();
@@ -149,8 +156,14 @@ public class Player : MonoBehaviour
         }
     }
 
-    void CellInAttackList()
+    public void CellInAttackList()
     {
+        for(int i = 0; i < cellsAttackList.Count; i++)
+        {
+            cellsAttackList[i].GetComponent<SpriteRenderer>().color = Color.gray;
+        }
+
+        cellsAttackList.Clear();
 
         //get coordinates cell which player stay it
         string[] xy = transform.parent.name.Split(new char[] { ' ' });
@@ -167,37 +180,10 @@ public class Player : MonoBehaviour
 
             for (int c = 0; c < cell.transform.childCount; c++)
             {
-                if(cell.transform.GetChild(c).tag == "Enemy" && (Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= player.RangeAttack)
+                if(cell.transform.GetChild(c).tag == "Enemy" && (Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= player.Skill.Range)
                 {
                     cellsAttackList.Add(cell);
                     cell.GetComponent<SpriteRenderer>().color = Color.red;
-                }
-            }
-        }
-    }
-
-    //Add cell in the list if enemy in range of magick spell
-    public void CellsInMagickList(MagickSpellClass spell)
-    {
-        //get coordinates cell which player stay it
-        string[] xy = transform.parent.name.Split(new char[] { ' ' });
-        int x = int.Parse(xy[1]);
-        int y = int.Parse(xy[0]);
-
-        for (int i = 0; i < cellsParent.transform.childCount; i++)
-        {
-            GameObject cell = cellsParent.transform.GetChild(i).gameObject;
-
-            string[] xy_ = cell.name.Split(new char[] { ' ' });
-            int x_ = int.Parse(xy_[1]);
-            int y_ = int.Parse(xy_[0]);
-
-            for (int c = 0; c < cell.transform.childCount; c++)
-            {
-                if (cell.transform.GetChild(c).tag == "Enemy" && (Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= spell.Range)
-                {
-                    cellsMagickList.Add(cell);
-                    cell.GetComponent<SpriteRenderer>().color = Color.blue;
                 }
             }
         }
@@ -241,16 +227,29 @@ public class Player : MonoBehaviour
         {
         }        
 
+        //Actions what player do when start his turn
         public override void StartRound()
         {
             haveMove = true;
             ObjectPerson.GetComponent<Player>().CellInMoveList();
-            ObjectPerson.GetComponent<Player>().CellInAttackList();
+            ObjectPerson.GetComponent<Player>().canvas.FillPanelOfSkills();
+            Skill = arrSkill[0];
+            DecreaseCooldown();
         }
 
-        public override void AddSpell(MagickSpellClass spell)
+        //Replace skill in array of skills which player own
+        public override void AddSkill(Skill spell, int index)
         {
-            listMagickSpells.Add(spell);
+            arrSkill[index] = spell;
+        }
+
+        //When round start cd all of skills decreases by 1
+        void DecreaseCooldown()
+        {
+            for(int i = 0; i < arrSkill.Length; i++)
+            {
+                if (arrSkill[i] is not null) arrSkill[i].DecreaseCurrentCooldown();
+            }
         }
     }
 }

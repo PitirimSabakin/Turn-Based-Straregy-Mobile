@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static MagickSpell;
+using static SkillScript;
 
 public class Person : MonoBehaviour
 {
@@ -9,9 +9,8 @@ public class Person : MonoBehaviour
     {
         public string Name { get; protected set; }
         public GameObject ObjectPerson { get; protected set; }
-        public int RangeAttack { get; private set; }
         public int MoveSpeed { get; private set; }
-        public int Damage { get; private set; }
+        public Skill Skill { get; set; }
         public float ArmorPercentPenetration { get; private set; }
         public float MagresPercentPenetration { get; private set; }
         public int HealthMAX { get; private set; }
@@ -19,16 +18,14 @@ public class Person : MonoBehaviour
         public float Armor { get; private set; }
         public float Magresit { get; private set; }
 
-        public List<MagickSpellClass> listMagickSpells = new List<MagickSpellClass>();
+        public Skill[] arrSkill = new Skill[4];
         public bool haveMove = false;
 
         public PersonClass(string name, GameObject objectPerson, int rangeAttack, int moveSpeed, int damage, float armorPercentPenetration, float magresPercentPenetration, int healthMAX, float armor, float magresit)
         {
             Name = name;
             ObjectPerson = objectPerson;
-            RangeAttack = rangeAttack;
             MoveSpeed = moveSpeed;
-            Damage = damage;
             ArmorPercentPenetration = armorPercentPenetration;
             MagresPercentPenetration = magresPercentPenetration;
             HealthMAX = healthMAX;
@@ -39,6 +36,6 @@ public class Person : MonoBehaviour
 
         public abstract void StartRound();
 
-        public abstract void AddSpell(MagickSpellClass spell);
+        public abstract void AddSkill(Skill spell, int index);
     }
 }
