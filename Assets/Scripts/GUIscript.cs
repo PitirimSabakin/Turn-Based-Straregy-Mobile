@@ -18,16 +18,37 @@ public class GUIscript : MonoBehaviour
     void Awake()
     {
         //Find UI buttons
-        move = GameObject.Find("Move").GetComponent<Button>();
         skipTurn = GameObject.Find("SkipButton").GetComponent<Button>();
 
-        targetCell = GameObject.Find("TargetCell");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         playerScript = GameObject.Find("Player").GetComponent<Player>();
 
-        move.onClick.AddListener(PressMoveButton);
         skipTurn.onClick.AddListener(PresSkipButton);
+    }
+
+    //Touch screen and choose cell
+    void Update()
+    {
+        //Can touch if player turn
+        if(Input.touchCount == 1 && Input.GetTouch(0).phase == TouchPhase.Ended && Global.persons[0].ObjectPerson.tag == "Player")
+        {
+            //touch`s position
+            Vector2 worldTouch = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+
+            Collider2D collider = Physics2D.OverlapPoint(worldTouch);
+
+            if (collider != null)
+            {
+                //if player touches cell
+                if(collider.transform.parent.name == "cellsParent")
+                {
+                    Global.persons[0].ObjectPerson
+                        .GetComponent<Player>()
+                        .CheckCellInList(collider.transform.gameObject);
+                }    
+            }
+        }
     }
 
     //Fill the panel with skills
@@ -56,57 +77,11 @@ public class GUIscript : MonoBehaviour
         }
     }
 
-    //Moving target. Can choose need cell
-    public void ChooseCell(string direction)
-    {
-        //Definition of current cell
-        string[] xy = targetCell.transform.parent.name.Split(new char[] { ' ' });
-        int x = int.Parse(xy[1]);
-        int y = int.Parse(xy[0]);
-
-        string newTargetCellName = "";
-
-        //Definition the name of the cell to which the target will be moved
-        if(direction == "Up")
-        {
-            newTargetCellName = $"{y - 1} {x}";
-        }
-
-        if (direction == "Left")
-        {
-            newTargetCellName = $"{y} {x - 1}";
-        }
-
-        if (direction == "Down")
-        {
-            newTargetCellName = $"{y + 1} {x}";
-        }
-
-        if (direction == "Right")
-        {
-            newTargetCellName = $"{y} {x + 1}";
-        }
-
-        //Move target, if cell is exists
-        GameObject cell = GameObject.Find(newTargetCellName);
-        if (cell is not null)
-        {
-            targetCell.transform.position = cell.transform.position;
-            targetCell.transform.parent = cell.transform;
-        }
-    }  
-
     //Skip turn
     void PresSkipButton()
     {
         Global.persons[0].ObjectPerson.GetComponent<Player>().CleanCells();
         gameManager.ChangeTurn();
-    }
-
-    //When the move button is pressed, targetCell passed for checking
-    void PressMoveButton()
-    {
-        playerScript.CheckCellInList(targetCell.transform.parent.gameObject);
     }
 
     public void ChooseSkill(int index)
