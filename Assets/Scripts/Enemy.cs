@@ -43,12 +43,6 @@ public class Enemy : MonoBehaviour
         
     }
 
-    //Get damage from player and send to EnemyClass
-    public void TakeDamage(int damage, SkillScript.TypeDamage typeDamage, float armorPenetrationPercent, float magPenetrationPercent)
-    {
-        enemyUnit.TakeDamage(damage, typeDamage, armorPenetrationPercent, magPenetrationPercent);
-    }
-
     //Method for the test of changing turn
     void qwe()
     {
@@ -86,37 +80,6 @@ public class Enemy : MonoBehaviour
         {
         }
 
-        //the damage decreases depending on the protective indicators
-        public void TakeDamage(int damage, SkillScript.TypeDamage typeDamage ,float armorPenetrationPercent, float magPenetrationPercent)
-        {
-            float coefDamage = 0;
-            if(typeDamage == SkillScript.TypeDamage.Physical)
-            {
-                float newArmor = (int)(Armor - Armor / 100 * armorPenetrationPercent);
-                coefDamage = (1f - 100f / (100f + newArmor)) * 100f;
-            }
-            else if(typeDamage == SkillScript.TypeDamage.Magick)
-            {
-                float newMagres = (int)(Magresit - Magresit / 100 * magPenetrationPercent);
-                coefDamage = (1f - 100f / (100f + newMagres)) * 100f;
-            }
-            
-            
-            
-            damage = (int)(damage - damage/100f * coefDamage);
-            HealthCurrent -= damage;
-            Debug.Log(HealthCurrent);
-
-
-            if (HealthCurrent <= 0) Death();
-        }
-
-        //Destroy object
-        private void Death()
-        {
-            Destroy(ObjectPerson);
-        }
-
         //the actions of the enemy when his turn begins
         public override void StartRound()
         {
@@ -127,6 +90,11 @@ public class Enemy : MonoBehaviour
         public override void AddSkill(SkillScript.Skill spell, int index)
         {
             
+        }
+
+        protected override void Death()
+        {
+            Destroy(ObjectPerson);
         }
     }
 }

@@ -143,8 +143,8 @@ public class Player : MonoBehaviour
                 {
                     if(cell.transform.GetChild(j).tag == "Enemy")
                     {
-                        Enemy enemy = cell.transform.GetChild(j).GetComponent<Enemy>();
-                        enemy.TakeDamage(player.Skill.Damage, player.Skill.TypeDamage, player.ArmorPercentPenetration, player.MagresPercentPenetration);
+                        Person.PersonClass enemy = Global.persons.Find(p => p.ObjectPerson == cell.transform.GetChild(j).gameObject);
+                        player.Attack(enemy);
                         player.Skill.GoToCooldown();
                         //Turn go the next person after attack
                         CleanCells();
@@ -250,6 +250,11 @@ public class Player : MonoBehaviour
             {
                 if (arrSkill[i] is not null) arrSkill[i].DecreaseCurrentCooldown();
             }
+        }
+
+        protected override void Death()
+        {
+            
         }
     }
 }
