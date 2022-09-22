@@ -36,7 +36,11 @@ public class Person : MonoBehaviour
 
         public abstract void StartRound();
 
-        public abstract void AddSkill(Skill spell, int index);
+        //Replace skill in array of skills which player own
+        public void AddSkill(Skill spell, int index)
+        {
+            arrSkill[index] = spell;
+        }
 
         //the damage decreases depending on the protective indicators
         public void TakeDamage(int damage, SkillScript.TypeDamage typeDamage, float armorPenetrationPercent, float magPenetrationPercent)
@@ -53,11 +57,9 @@ public class Person : MonoBehaviour
                 coefDamage = (1f - 100f / (100f + newMagres)) * 100f;
             }
 
-
-
             damage = (int)(damage - damage / 100f * coefDamage);
             HealthCurrent -= damage;
-            Debug.Log(HealthCurrent);
+            Debug.Log($"{ObjectPerson.name} {HealthCurrent}");
 
 
             if (HealthCurrent <= 0) Death();
@@ -66,9 +68,16 @@ public class Person : MonoBehaviour
         //Destroy object
         protected abstract void Death();
 
-        public void Attack(PersonClass person)
+        public abstract void Attack(PersonClass person);
+
+
+        //When round start cd all of skills decreases by 1
+        protected void DecreaseCooldown()
         {
-            person.TakeDamage(Skill.Damage, Skill.TypeDamage, ArmorPercentPenetration, MagresPercentPenetration);
+            for (int i = 0; i < arrSkill.Length; i++)
+            {
+                if (arrSkill[i] is not null) arrSkill[i].DecreaseCurrentCooldown();
+            }
         }
     }
 }

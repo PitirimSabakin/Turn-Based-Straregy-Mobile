@@ -145,10 +145,10 @@ public class Player : MonoBehaviour
                     {
                         Person.PersonClass enemy = Global.persons.Find(p => p.ObjectPerson == cell.transform.GetChild(j).gameObject);
                         player.Attack(enemy);
-                        player.Skill.GoToCooldown();
+
                         //Turn go the next person after attack
                         CleanCells();
-                        gameManager.ChangeTurn();
+                        
                     }
                 }
                 return;
@@ -237,19 +237,12 @@ public class Player : MonoBehaviour
             DecreaseCooldown();
         }
 
-        //Replace skill in array of skills which player own
-        public override void AddSkill(Skill spell, int index)
+        public override void Attack(Person.PersonClass person)
         {
-            arrSkill[index] = spell;
-        }
-
-        //When round start cd all of skills decreases by 1
-        void DecreaseCooldown()
-        {
-            for(int i = 0; i < arrSkill.Length; i++)
-            {
-                if (arrSkill[i] is not null) arrSkill[i].DecreaseCurrentCooldown();
-            }
+            person.TakeDamage(Skill.Damage, Skill.TypeDamage, ArmorPercentPenetration, MagresPercentPenetration);
+            Skill.GoToCooldown();
+            ObjectPerson.GetComponent<Player>().gameManager.ChangeTurn();
+            ObjectPerson.GetComponent<Player>().CleanCells();
         }
 
         protected override void Death()
