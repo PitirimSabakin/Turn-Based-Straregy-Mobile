@@ -28,6 +28,8 @@ public class Enemy : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         cellsParent = GameObject.Find("cellsParent");
 
+        HealthBar healthBar = transform.GetChild(0).GetChild(0).GetComponent<HealthBar>();
+
         enemyUnit = new EnemyClass(name,
                                  gameObject,
                                  rangeAttack,
@@ -37,12 +39,16 @@ public class Enemy : MonoBehaviour
                                  magresPercentPenetration,
                                  health,
                                  armor,
-                                 magresist);
+                                 magresist,
+                                 healthBar);
 
         Skill skill = new Skill("sword", 10, 1, TypeDamage.Physical, 0, null);
         enemyUnit.AddSkill(skill, 0);
         skill = new Skill("fireball", 15, 3, TypeDamage.Magick, 2, null);
         enemyUnit.AddSkill(skill, 1);
+
+        //Setup initial health in healthbar
+        healthBar.NumberInHealthBar(health);
 
         Global.persons.Add(enemyUnit);
     }
@@ -235,7 +241,8 @@ public class Enemy : MonoBehaviour
                            float magresPercentPenetration,
                            int healtMAX,
                            float armor,
-                           float magresist) : base(name,
+                           float magresist,
+                           HealthBar healthBar) : base(name,
                                                    objectPerson,
                                                    rangeAttack,
                                                    moveSpeed,
@@ -244,7 +251,8 @@ public class Enemy : MonoBehaviour
                                                    magresPercentPenetration,
                                                    healtMAX,
                                                    armor,
-                                                   magresist)
+                                                   magresist,
+                                                   healthBar)
         {
         }
 

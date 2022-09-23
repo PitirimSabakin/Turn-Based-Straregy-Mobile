@@ -32,6 +32,8 @@ public class Player : MonoBehaviour
         cellsParent = GameObject.Find("cellsParent");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
+        HealthBar healthBar = transform.GetChild(0).GetChild(0).GetComponent<HealthBar>();
+
         player = new PlayerClass(name,
                                  gameObject,
                                  rangeAttack,
@@ -41,12 +43,16 @@ public class Player : MonoBehaviour
                                  magresPercentPenetration,
                                  health,
                                  armor,
-                                 magresist);
+                                 magresist,
+                                 healthBar);
 
         Skill skill = new Skill("sword", 10, 1, TypeDamage.Physical, 0, listOfSprite[0]);        
         player.AddSkill(skill, 0);
         skill = new Skill("fireball", 15, 3, TypeDamage.Magick, 2, listOfSprite[1]);
         player.AddSkill(skill, 1);
+
+        //Setup initial health in healthbar
+        healthBar.NumberInHealthBar(health);
 
         Global.persons.Add(player);
 
@@ -214,16 +220,18 @@ public class Player : MonoBehaviour
                            float magresPercentPenetration,
                            int healtMAX,
                            float armor,
-                           float magresist) : base(name,
-                                                   objectPlayer,
-                                                   rangeAttack,
-                                                   moveSpeed,
-                                                   damage,
-                                                   armorPercentPenetration,
-                                                   magresPercentPenetration,
-                                                   healtMAX,
-                                                   armor,
-                                                   magresist)
+                           float magresist,
+                           HealthBar healthBar) : base(name,
+                                                       objectPlayer,
+                                                       rangeAttack,
+                                                       moveSpeed,
+                                                       damage,
+                                                       armorPercentPenetration,
+                                                       magresPercentPenetration,
+                                                       healtMAX,
+                                                       armor,
+                                                       magresist,
+                                                       healthBar)
         {
         }        
 
