@@ -4,13 +4,11 @@ using UnityEngine.UI;
 
 public class GUIscript : MonoBehaviour
 {
-    private Button move;
     private Button skipTurn;
+    private RectTransform pointer;
 
-    private GameObject targetCell;
     private GameManager gameManager;
 
-    private Player playerScript;
 
     [SerializeField] private List<GameObject> buttonsOfSkills;
 
@@ -20,9 +18,9 @@ public class GUIscript : MonoBehaviour
         //Find UI buttons
         skipTurn = GameObject.Find("SkipButton").GetComponent<Button>();
 
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        pointer = GameObject.Find("Pointer").GetComponent<RectTransform>();
 
-        playerScript = GameObject.Find("Player").GetComponent<Player>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         skipTurn.onClick.AddListener(PresSkipButton);
     }
@@ -90,6 +88,9 @@ public class GUIscript : MonoBehaviour
         {
             Global.persons[0].Skill = Global.persons[0].arrSkill[index];
             Global.persons[0].ObjectPerson.GetComponent<Player>().CellInAttackList();
+
+            GameObject pressButton = GameObject.Find($"Skill{index}");
+            pointer.position = new Vector2(pressButton.transform.position.x, pressButton.transform.position.y + 60);
         }
             
     }
