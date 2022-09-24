@@ -9,7 +9,6 @@ public class GUIscript : MonoBehaviour
 
     private GameManager gameManager;
 
-
     [SerializeField] private List<GameObject> buttonsOfSkills;
 
     // Start is called before the first frame update
@@ -94,4 +93,6 @@ public class GUIscript : MonoBehaviour
         }
             
     }
+
+    
 }

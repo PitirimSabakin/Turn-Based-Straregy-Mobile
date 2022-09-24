@@ -45,5 +45,10 @@ public class SkillScript : MonoBehaviour
             if (CurrentCD > 0) CurrentCD--;
             if(CurrentCD == 0) Ready = true;
         }
+
+        public override string ToString()
+        {
+            return string.Join("\n", $"Название: {Name}", $"Урон: {Damage}", $"Дальность: {Range}", $"Перезарядка: {Cooldown}");
+        }
     }
 }

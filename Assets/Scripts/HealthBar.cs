@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,11 +10,12 @@ public class HealthBar : MonoBehaviour
     void Awake()
     {
         healthBarImage = transform.GetChild(0).GetComponent<Image>();
-        m_TextMeshPro = transform.GetChild(1).GetComponent<TMP_Text>();
+        
     }
 
     public void NumberInHealthBar(float health)
     {
+        m_TextMeshPro = transform.GetChild(1).GetComponent<TMP_Text>();
         m_TextMeshPro.text = health.ToString();
     }
 
