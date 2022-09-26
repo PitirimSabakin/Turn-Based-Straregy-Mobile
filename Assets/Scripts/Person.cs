@@ -52,6 +52,8 @@ public class Person : MonoBehaviour
 
             HealthBar.UpdateHealthBar(HealthCurrent, HealthMAX);
 
+            ObjectPerson.GetComponent<Animator>().SetTrigger("TakeDamage");
+
             if (HealthCurrent <= 0) Death();
         }
 
@@ -68,6 +70,65 @@ public class Person : MonoBehaviour
             {
                 if (arrSkill[i] is not null) arrSkill[i].DecreaseCurrentCooldown();
             }
+        }
+
+        //find the nearest player
+        public Transform LookingForNearbestPerson()
+        {
+            int xNearbestPerson = 99;
+            int yNearbestPerson = 99;
+            Transform person = null;
+
+            //get coordinates cell which enemy stay it
+            string[] xy = ObjectPerson.transform.parent.name.Split(new char[] { ' ' });
+            int xCurrentPerson = int.Parse(xy[1]);
+            int yCurrentPerson = int.Parse(xy[0]);
+
+            for (int i = 0; i < Global.persons.Count; i++)
+            {
+                if ( (ObjectPerson.tag == "Enemy" && Global.persons[i].ObjectPerson.tag == "Player")
+                    || (ObjectPerson.tag == "Player" && Global.persons[i].ObjectPerson.tag == "Enemy"))
+                {
+                    //get coordinates cell which player stay it
+                    string[] xy_ = Global.persons[i].ObjectPerson.transform.parent.name.Split(new char[] { ' ' });
+                    int xNearbestPerson_ = int.Parse(xy_[1]);
+                    int yNearbestPerson_ = int.Parse(xy_[0]);
+
+                    //Checking which player closer
+                    if (Mathf.Abs(xNearbestPerson_ - xCurrentPerson) + Mathf.Abs(yNearbestPerson_ - yCurrentPerson)
+                        < Mathf.Abs(xNearbestPerson - xCurrentPerson) + Mathf.Abs(yNearbestPerson - yCurrentPerson))
+                    {
+                        xNearbestPerson = xNearbestPerson_;
+                        yNearbestPerson = yNearbestPerson_;
+                        person = Global.persons[i].ObjectPerson.transform;
+                    }
+                }
+            }
+            return person;
+        }
+
+        //Turn the person to face the he`s enemy
+        public void ReversePerson(Transform toPerson)
+        {
+            
+            SpriteRenderer spriteRenderer = ObjectPerson.GetComponent<SpriteRenderer>();
+
+            //get x current person
+            string[] xyCurrent = ObjectPerson.transform.parent.name.Split(new char[] { ' ' });
+            int xCurrentPerson = int.Parse(xyCurrent[1]);
+
+            //get x nearbest person
+            string[] xyNearbest = toPerson.parent.name.Split(new char[] { ' ' });
+            int xNearbestPerson = int.Parse(xyNearbest[1]);
+
+            if (xCurrentPerson < xNearbestPerson && spriteRenderer.flipX) spriteRenderer.flipX = false;
+            else if(xCurrentPerson > xNearbestPerson && !spriteRenderer.flipX) spriteRenderer.flipX = true;
+        }
+
+        public void ReversePerson()
+        {
+            Transform nearbestPerson = LookingForNearbestPerson();
+            ReversePerson(nearbestPerson);
         }
     }
 }

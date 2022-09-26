@@ -51,47 +51,14 @@ public class Enemy : MonoBehaviour
         healthBar.NumberInHealthBar(health);
 
         Global.persons.Add(enemyUnit);
+
+        StartCoroutine(wait());
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator wait()
     {
-        
-    }
-
-    //find the nearest player
-    void LookingForNearbestPlayer()
-    {
-        int xPlayer = 99;
-        int yPlayer = 99;
-        Person.PersonClass person = null;
-
-        //get coordinates cell which enemy stay it
-        string[] xy = transform.parent.name.Split(new char[] { ' ' });
-        int xEnemy = int.Parse(xy[1]);
-        int yEnemy = int.Parse(xy[0]);
-
-        for (int i = 0; i < Global.persons.Count; i++)
-        {
-            if (Global.persons[i].ObjectPerson.tag == "Player")
-            {
-                //get coordinates cell which player stay it
-                string[] xy_ = Global.persons[i].ObjectPerson.transform.parent.name.Split(new char[] { ' ' });
-                int xPlayer_ = int.Parse(xy_[1]);
-                int yPlayer_ = int.Parse(xy_[0]);
-
-                //Checking which player closer
-                if (Mathf.Abs(xPlayer_ - xEnemy) + Mathf.Abs(yPlayer_ - yEnemy)
-                    < Mathf.Abs(xPlayer - xEnemy) + Mathf.Abs(yPlayer - yEnemy))
-                {
-                    xPlayer = xPlayer_;
-                    yPlayer = yPlayer_;
-                    person = Global.persons[i];
-                }
-            }
-        }
-
-        MoveEnemy(xPlayer, yPlayer, person);
+        yield return new WaitForEndOfFrame();
+        enemyUnit.ReversePerson();
     }
 
     //Cell in list which enemy can move
@@ -152,13 +119,21 @@ public class Enemy : MonoBehaviour
         }
         //Remove the cell on which enemy stay
         cellsMoveList.RemoveAt(0);
-        LookingForNearbestPlayer();
+        MoveEnemy();
     }
 
     //move enemy to the nearest player 
-    void MoveEnemy(int xPlayer, int yPlayer, Person.PersonClass player)
+    void MoveEnemy()
     {
+        Transform nearbestPlayer = enemyUnit.LookingForNearbestPerson();
+        Person.PersonClass player = Global.persons.Find(p => p.ObjectPerson == nearbestPlayer.gameObject);
+
         //get coordinates cell which player stay it
+        string[] xyPlayer = nearbestPlayer.parent.name.Split(new char[] { ' ' });
+        int xPlayer = int.Parse(xyPlayer[1]);
+        int yPlayer = int.Parse(xyPlayer[0]);
+
+        //get coordinates cell which enemy stay it
         string[] xy = transform.parent.name.Split(new char[] { ' ' });
         int xEnemy = int.Parse(xy[1]);
         int yEnemy = int.Parse(xy[0]);
@@ -197,7 +172,7 @@ public class Enemy : MonoBehaviour
             }
 
             //Move
-            transform.position = new Vector2(cellToMove.transform.position.x, cellToMove.transform.position.y + 0.15f);
+            transform.position = new Vector2(cellToMove.transform.position.x, cellToMove.transform.position.y + 0.4f);
             transform.parent = cellToMove.transform;
         }
 
@@ -229,6 +204,18 @@ public class Enemy : MonoBehaviour
     void CleanCells()
     {
         cellsMoveList.Clear();
+    }
+
+    //Change turn after playing animation
+    public void ChangeTurnAfterAttack()
+    {
+        gameManager.CheckGameOver();
+    }
+
+    //Destroy object after playing animation
+    public void Death()
+    {
+        Destroy(gameObject);
     }
 
     class EnemyClass : Person.PersonClass
@@ -271,18 +258,22 @@ public class Enemy : MonoBehaviour
             {
                 person.TakeDamage(Skill.Damage);
                 Skill.GoToCooldown();
-            }
+                ReversePerson(person.ObjectPerson.transform);
 
-            ObjectPerson.GetComponent<Enemy>().gameManager.CheckGameOver();
+                if (Skill.Range == 1) ObjectPerson.GetComponent<Animator>().SetTrigger("Attack");
+                else ObjectPerson.GetComponent<Animator>().SetTrigger("SuperAttack");
+            }
+            else ObjectPerson.GetComponent<Enemy>().gameManager.CheckGameOver();
         }
 
         protected override void Death()
         {
+            ObjectPerson.transform.parent = null;
             for(int i = 0; i < Global.persons.Count; i++)
             {
                 if(Global.persons[i].ObjectPerson == ObjectPerson) Global.persons.RemoveAt(i);
             }
-            Destroy(ObjectPerson);
+            ObjectPerson.GetComponent<Animator>().SetTrigger("Death");
         }
     }
 }

@@ -56,6 +56,13 @@ public class Player : MonoBehaviour
 
         Global.persons.Add(player);
 
+        StartCoroutine(wait());
+    }
+
+    IEnumerator wait()
+    {
+        yield return new WaitForEndOfFrame();
+        player.ReversePerson();
     }
 
     //Change color of cell, which player can move on it and add in move list. Breadth-first search
@@ -208,6 +215,18 @@ public class Player : MonoBehaviour
         CellInAttackList();
     }
 
+    //Change turn after playing animation
+    public void ChangeTurnAfterAttack()
+    {
+        gameManager.CheckGameOver();
+    }
+
+    //Destroy object after playing animation
+    public void Death()
+    {
+        Destroy(gameObject);
+    }
+
     class PlayerClass: Person.PersonClass
     {
         public PlayerClass(string name,
@@ -242,24 +261,26 @@ public class Player : MonoBehaviour
             ObjectPerson.GetComponent<Player>().canvas.FillPanelOfSkills();
             Skill = arrSkill[0];
             DecreaseCooldown();
-            ObjectPerson.GetComponent<SpriteRenderer>().color = Color.green;
         }
 
         public override void Attack(Person.PersonClass person)
         {
+            ReversePerson(person.ObjectPerson.transform);
             person.TakeDamage(Skill.Damage);
             Skill.GoToCooldown();
-            ObjectPerson.GetComponent<SpriteRenderer>().color = Color.white;
-            ObjectPerson.GetComponent<Player>().gameManager.CheckGameOver();
+
+            if (Skill.Range == 1) ObjectPerson.GetComponent<Animator>().SetTrigger("Attack");
+            else ObjectPerson.GetComponent<Animator>().SetTrigger("SuperAttack");
         }
 
         protected override void Death()
         {
+            ObjectPerson.transform.parent = null;
             for (int i = 0; i < Global.persons.Count; i++)
             {
                 if (Global.persons[i].ObjectPerson == ObjectPerson) Global.persons.RemoveAt(i);
             }
-            Destroy(ObjectPerson);
+            ObjectPerson.GetComponent<Animator>().SetTrigger("Death");
         }
     }
 }

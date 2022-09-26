@@ -62,11 +62,23 @@ public class GameManager : MonoBehaviour
         }
         if (!havePlayer || !haveEnemy)
         {
-            panelOfGameOver.SetActive(true);
+            StartCoroutine(waitLastDeath());
             if (!havePlayer) panelOfGameOver.transform.GetChild(0).GetComponent<TMP_Text>().text = "Поражение";
             else panelOfGameOver.transform.GetChild(0).GetComponent<TMP_Text>().text = "Победа";
         }
-        else ChangeTurn();
+        else StartCoroutine(waitChange());
+    }
+
+    IEnumerator waitLastDeath()
+    {
+        yield return new WaitForSeconds(1);
+        panelOfGameOver.SetActive(true);       
+    }
+
+    IEnumerator waitChange()
+    {
+        yield return new WaitForEndOfFrame();
+        ChangeTurn();
     }
 
     //Spawn cells with an adjustable size
