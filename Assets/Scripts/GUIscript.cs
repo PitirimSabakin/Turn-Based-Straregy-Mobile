@@ -78,6 +78,7 @@ public class GUIscript : MonoBehaviour
     void PresSkipButton()
     {
         Global.persons[0].ObjectPerson.GetComponent<Player>().CleanCells();
+        Global.persons[0].ObjectPerson.GetComponent<SpriteRenderer>().color = Color.white;
         gameManager.ChangeTurn();
     }
 

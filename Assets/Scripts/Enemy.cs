@@ -127,7 +127,8 @@ public class Enemy : MonoBehaviour
                     //skip iteration if on this cell stay player
                     for (int ch = 0; ch < cell.transform.childCount; ch++)
                     {
-                        if (cell.transform.GetChild(ch).tag == "Player") skip = true;
+                        if (cell.transform.GetChild(ch).tag == "Player"
+                            || cell.transform.GetChild(ch).tag == "Enemy") skip = true;
                     }
 
                     //skip iteration if this cell already in the list
@@ -268,7 +269,7 @@ public class Enemy : MonoBehaviour
         {
             if (Skill is not null)
             {
-                person.TakeDamage(Skill.Damage, Skill.TypeDamage, ArmorPercentPenetration, MagresPercentPenetration);
+                person.TakeDamage(Skill.Damage);
                 Skill.GoToCooldown();
                 Debug.Log(Skill.Name);
             }
@@ -278,6 +279,10 @@ public class Enemy : MonoBehaviour
 
         protected override void Death()
         {
+            for(int i = 0; i < Global.persons.Count; i++)
+            {
+                if(Global.persons[i].ObjectPerson == ObjectPerson) Global.persons.RemoveAt(i);
+            }
             Destroy(ObjectPerson);
         }
     }

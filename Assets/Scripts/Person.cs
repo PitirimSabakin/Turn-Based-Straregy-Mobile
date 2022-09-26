@@ -45,21 +45,8 @@ public class Person : MonoBehaviour
         }
 
         //the damage decreases depending on the protective indicators
-        public void TakeDamage(int damage, SkillScript.TypeDamage typeDamage, float armorPenetrationPercent, float magPenetrationPercent)
+        public void TakeDamage(int damage)
         {
-            float coefDamage = 0;
-            if (typeDamage == SkillScript.TypeDamage.Physical)
-            {
-                float newArmor = (int)(Armor - Armor / 100 * armorPenetrationPercent);
-                coefDamage = (1f - 100f / (100f + newArmor)) * 100f;
-            }
-            else if (typeDamage == SkillScript.TypeDamage.Magick)
-            {
-                float newMagres = (int)(Magresit - Magresit / 100 * magPenetrationPercent);
-                coefDamage = (1f - 100f / (100f + newMagres)) * 100f;
-            }
-
-            damage = (int)(damage - damage / 100f * coefDamage);
             HealthCurrent -= damage;
             Debug.Log($"{ObjectPerson.name} {HealthCurrent}");
 

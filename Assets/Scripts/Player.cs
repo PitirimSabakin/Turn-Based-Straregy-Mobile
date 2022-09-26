@@ -91,7 +91,8 @@ public class Player : MonoBehaviour
                     //skip iteration if on this cell stay enemy
                     for(int ch = 0; ch < cell.transform.childCount; ch++)
                     {
-                        if (cell.transform.GetChild(ch).tag == "Enemy") skip = true;
+                        if (cell.transform.GetChild(ch).tag == "Enemy"
+                            || cell.transform.GetChild(ch).tag == "Player") skip = true;
                     }
 
                     //skip iteration if this cell already in the list
@@ -153,8 +154,6 @@ public class Player : MonoBehaviour
                         player.Attack(enemy);
 
                         //Turn go the next person after attack
-                        CleanCells();
-                        
                     }
                 }
                 return;
@@ -243,14 +242,15 @@ public class Player : MonoBehaviour
             ObjectPerson.GetComponent<Player>().canvas.FillPanelOfSkills();
             Skill = arrSkill[0];
             DecreaseCooldown();
+            ObjectPerson.GetComponent<SpriteRenderer>().color = Color.green;
         }
 
         public override void Attack(Person.PersonClass person)
         {
-            person.TakeDamage(Skill.Damage, Skill.TypeDamage, ArmorPercentPenetration, MagresPercentPenetration);
+            person.TakeDamage(Skill.Damage);
             Skill.GoToCooldown();
+            ObjectPerson.GetComponent<SpriteRenderer>().color = Color.white;
             ObjectPerson.GetComponent<Player>().gameManager.ChangeTurn();
-            ObjectPerson.GetComponent<Player>().CleanCells();
         }
 
         protected override void Death()
