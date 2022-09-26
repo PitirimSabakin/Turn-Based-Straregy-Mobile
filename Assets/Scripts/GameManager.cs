@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static SkillScript;
 using static Person;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,10 +14,11 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject cellsParent;
     [SerializeField] private GameObject buttons;
+    [SerializeField] private GameObject panelOfGameOver;
 
     // Start is called before the first frame update
     void Start()
-    {
+    {       
         StartCoroutine(waitStart());
     }
 
@@ -33,11 +35,13 @@ public class GameManager : MonoBehaviour
         if (Global.persons[0].ObjectPerson.tag == "Enemy")
         {
             buttons.SetActive(false);
-        }else buttons.SetActive(true);
+        }
+        else buttons.SetActive(true);
         Global.persons[0].StartRound();
     }
-
-    //Delete first person from the list and add him on end of the list
+    
+        
+//Delete first person from the list and add him on end of the list
     public void ChangeTurn()
     {
         PersonClass buff = Global.persons[0];
@@ -45,6 +49,24 @@ public class GameManager : MonoBehaviour
         Global.persons.RemoveAt(0);
         Global.persons.Add(buff);
         StartRound();
+    }
+
+    public void CheckGameOver()
+    {
+        bool havePlayer = false;
+        bool haveEnemy = false;
+        for (int i = 0; i < Global.persons.Count; i++)
+        {
+            if (Global.persons[i].ObjectPerson.tag == "Player") havePlayer = true;
+            if (Global.persons[i].ObjectPerson.tag == "Enemy") haveEnemy = true;
+        }
+        if (!havePlayer || !haveEnemy)
+        {
+            panelOfGameOver.SetActive(true);
+            if (!havePlayer) panelOfGameOver.transform.GetChild(0).GetComponent<TMP_Text>().text = "Поражение";
+            else panelOfGameOver.transform.GetChild(0).GetComponent<TMP_Text>().text = "Победа";
+        }
+        else ChangeTurn();
     }
 
     //Spawn cells with an adjustable size

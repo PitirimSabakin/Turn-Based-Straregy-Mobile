@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GUIscript : MonoBehaviour
 {
@@ -95,5 +96,9 @@ public class GUIscript : MonoBehaviour
             
     }
 
-    
+    public void StartMainMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
+
 }

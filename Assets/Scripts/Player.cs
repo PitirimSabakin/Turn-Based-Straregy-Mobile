@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
 
     // Start is called before the first frame update
     void Awake()
-    {
+    {      
         canvas = GameObject.Find("Canvas").GetComponent<GUIscript>();
         cellsParent = GameObject.Find("cellsParent");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -250,12 +250,16 @@ public class Player : MonoBehaviour
             person.TakeDamage(Skill.Damage);
             Skill.GoToCooldown();
             ObjectPerson.GetComponent<SpriteRenderer>().color = Color.white;
-            ObjectPerson.GetComponent<Player>().gameManager.ChangeTurn();
+            ObjectPerson.GetComponent<Player>().gameManager.CheckGameOver();
         }
 
         protected override void Death()
         {
-            
+            for (int i = 0; i < Global.persons.Count; i++)
+            {
+                if (Global.persons[i].ObjectPerson == ObjectPerson) Global.persons.RemoveAt(i);
+            }
+            Destroy(ObjectPerson);
         }
     }
 }

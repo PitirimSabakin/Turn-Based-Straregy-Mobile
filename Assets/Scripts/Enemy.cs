@@ -197,7 +197,7 @@ public class Enemy : MonoBehaviour
             }
 
             //Move
-            transform.position = cellToMove.transform.position;
+            transform.position = new Vector2(cellToMove.transform.position.x, cellToMove.transform.position.y + 0.15f);
             transform.parent = cellToMove.transform;
         }
 
@@ -271,10 +271,9 @@ public class Enemy : MonoBehaviour
             {
                 person.TakeDamage(Skill.Damage);
                 Skill.GoToCooldown();
-                Debug.Log(Skill.Name);
             }
-            
-            ObjectPerson.GetComponent<Enemy>().gameManager.ChangeTurn();
+
+            ObjectPerson.GetComponent<Enemy>().gameManager.CheckGameOver();
         }
 
         protected override void Death()
