@@ -256,9 +256,9 @@ public class Enemy : MonoBehaviour
         {
             if (Skill is not null)
             {
-                person.TakeDamage(Skill.Damage);
-                Skill.GoToCooldown();
                 ReversePerson(person.ObjectPerson.transform);
+                person.TakeDamage(Skill.Damage);
+                Skill.GoToCooldown();                
 
                 if (Skill.Range == 1) ObjectPerson.GetComponent<Animator>().SetTrigger("Attack");
                 else ObjectPerson.GetComponent<Animator>().SetTrigger("SuperAttack");

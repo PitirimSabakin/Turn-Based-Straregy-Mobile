@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
     }
     
         
-//Delete first person from the list and add him on end of the list
+    //Delete first person from the list and add him on end of the list
     public void ChangeTurn()
     {
         PersonClass buff = Global.persons[0];

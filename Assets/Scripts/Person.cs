@@ -44,11 +44,9 @@ public class Person : MonoBehaviour
             arrSkill[index] = spell;
         }
 
-        //the damage decreases depending on the protective indicators
         public void TakeDamage(int damage)
         {
             HealthCurrent -= damage;
-            Debug.Log($"{ObjectPerson.name} {HealthCurrent}");
 
             HealthBar.UpdateHealthBar(HealthCurrent, HealthMAX);
 

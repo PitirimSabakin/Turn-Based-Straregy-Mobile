@@ -192,7 +192,8 @@ public class Player : MonoBehaviour
 
             for (int c = 0; c < cell.transform.childCount; c++)
             {
-                if(cell.transform.GetChild(c).tag == "Enemy" && (Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= player.Skill.Range)
+                if(cell.transform.GetChild(c).tag == "Enemy"
+                    && (Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) <= player.Skill.Range)
                 {
                     cellsAttackList.Add(cell);
                     cell.GetComponent<SpriteRenderer>().color = Color.red;
