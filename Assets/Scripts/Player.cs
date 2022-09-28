@@ -16,14 +16,21 @@ public class Player : MonoBehaviour
     [SerializeField] private int magresist = 0;
     [SerializeField] private List<Sprite> listOfSprite;
 
+    private bool isMoving = false;
+    List<Transform> cellsToMoveForAnimaion = new List<Transform>();
+    private float elapsedTime = 0f;
+    private GameObject toCell;
+
     private GameObject cellsParent;
     private GUIscript canvas;
 
-    private List<GameObject> cellsMoveList = new List<GameObject>();
+    private List<Transform> cellsMoveList = new List<Transform>();
     private List<GameObject> cellsAttackList = new List<GameObject>();
 
     PlayerClass player;
     GameManager gameManager;
+
+    private SpriteRenderer spriteRenderer;
 
     // Start is called before the first frame update
     void Awake()
@@ -31,6 +38,8 @@ public class Player : MonoBehaviour
         canvas = GameObject.Find("Canvas").GetComponent<GUIscript>();
         cellsParent = GameObject.Find("cellsParent");
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         HealthBar healthBar = transform.GetChild(0).GetChild(0).GetComponent<HealthBar>();
 
@@ -59,6 +68,53 @@ public class Player : MonoBehaviour
         StartCoroutine(wait());
     }
 
+    void Update()
+    {
+        if (isMoving)
+        {
+            MoveAnimation();
+        }
+    }
+
+    //Move person to each cell in path
+    void MoveAnimation()
+    {
+        if (cellsToMoveForAnimaion.Count != 0)
+        {
+            if (transform.parent.position.x < cellsToMoveForAnimaion[0].position.x)
+            {
+                if (spriteRenderer.flipX) spriteRenderer.flipX = false;
+                transform.Translate(Vector2.right * Time.deltaTime * 1.5f);
+            }
+            else if (transform.parent.position.x > cellsToMoveForAnimaion[0].position.x)
+            {
+                if (!spriteRenderer.flipX) spriteRenderer.flipX = true;
+                transform.Translate(Vector2.left * Time.deltaTime * 1.5f);
+            }
+            else if (transform.parent.position.y < cellsToMoveForAnimaion[0].position.y)
+            {
+                transform.Translate(Vector2.up * Time.deltaTime * 1.5f);
+            }
+            else if (transform.parent.position.y > cellsToMoveForAnimaion[0].position.y)
+            {
+                transform.Translate(Vector2.down * Time.deltaTime * 1.5f);
+            }
+
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime >= 0.6)
+            {
+                transform.parent = cellsToMoveForAnimaion[0];
+                cellsToMoveForAnimaion.RemoveAt(0);
+                elapsedTime = 0;
+            }
+        }
+        else
+        {
+            isMoving = false;
+            MovePlayerOnCell(toCell);
+        }
+    }
+
     IEnumerator wait()
     {
         yield return new WaitForEndOfFrame();
@@ -77,7 +133,7 @@ public class Player : MonoBehaviour
         int y = int.Parse(xy[0]);
 
         //Add the cell on which the player is located
-        cellsMoveList.Add(transform.parent.gameObject);
+        cellsMoveList.Add(transform.parent);
 
         //Breadth-first search
         //count of steps for moving to cell
@@ -105,7 +161,7 @@ public class Player : MonoBehaviour
                     //skip iteration if this cell already in the list
                     for(int c = 0; c < cellsMoveList.Count; c++)
                     {
-                        if (cell == cellsMoveList[c]) skip = true;
+                        if (cell.transform == cellsMoveList[c]) skip = true;
                     }
 
                     if (skip) continue;
@@ -116,7 +172,7 @@ public class Player : MonoBehaviour
 
                     if ((Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) == 1)
                     {
-                        cellsMoveList.Add(cell);
+                        cellsMoveList.Add(cell.transform);
                         cell.GetComponent<SpriteRenderer>().color = Color.white;
                     }
                 }
@@ -142,9 +198,15 @@ public class Player : MonoBehaviour
     {
         for(int i = 0; i < cellsMoveList.Count; i++)
         {
-            if(cell == cellsMoveList[i])
+            if(cell.transform == cellsMoveList[i])
             {
-                MovePlayerOnCell(cell);
+                //MovePlayerOnCell(cell);
+                toCell = cell;
+                cellsToMoveForAnimaion = player.CellToMoveListForAnimation(cellsMoveList, cell.transform);
+                elapsedTime = 0f;
+                GetComponent<Animator>().SetBool("Move", true);
+                CleanCells();
+                isMoving = true;
                 return;
             }
         }
@@ -159,7 +221,7 @@ public class Player : MonoBehaviour
                     {
                         Person.PersonClass enemy = Global.persons.Find(p => p.ObjectPerson == cell.transform.GetChild(j).gameObject);
                         player.Attack(enemy);
-
+                        CleanCells();
                         //Turn go the next person after attack
                     }
                 }
@@ -206,9 +268,10 @@ public class Player : MonoBehaviour
     private void MovePlayerOnCell(GameObject cell)
     {
         Vector3 pos = cell.transform.position;
-        pos.y += 0.3f;
+        pos.y += 0.4f;
         transform.position = pos;
         transform.parent = cell.transform;
+        GetComponent<Animator>().SetBool("Move", false);
 
         //Player can only attack after movement
         player.haveMove = false;

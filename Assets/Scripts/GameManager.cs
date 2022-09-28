@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
         buff.haveMove = false;
         Global.persons.RemoveAt(0);
         Global.persons.Add(buff);
+        Debug.Log(Global.persons[0].ObjectPerson.tag);
         StartRound();
     }
 

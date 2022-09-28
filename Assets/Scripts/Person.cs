@@ -19,6 +19,8 @@ public class Person : MonoBehaviour
         public float Magresit { get; private set; }
         public HealthBar HealthBar { get; private set; }
 
+        private List<List<Transform>> cellsInMoveListForAnomation = new List<List<Transform>>();
+
         public Skill[] arrSkill = new Skill[4];
         public bool haveMove = false;
 
@@ -127,6 +129,65 @@ public class Person : MonoBehaviour
         {
             Transform nearbestPerson = LookingForNearbestPerson();
             ReversePerson(nearbestPerson);
+        }
+
+        public List<Transform> CellToMoveListForAnimation(List<Transform> cellsInMoveList, Transform cellToFindPath)
+        {
+            List<Transform> firstList = new List<Transform> ();
+            firstList.Add(ObjectPerson.transform.parent);
+
+            cellsInMoveListForAnomation.Clear();
+            cellsInMoveListForAnomation.Add(firstList);
+
+            while (true)
+            {
+                int count = cellsInMoveListForAnomation.Count;
+                for(int i = 0; i < count; i++)
+                {
+                    string[] xyCurrent = cellsInMoveListForAnomation[i][cellsInMoveListForAnomation[i].Count - 1].name.Split(new char[] { ' ' });
+                    int xCurrnetStep = int.Parse(xyCurrent[1]);
+                    int yCurrentSrep = int.Parse(xyCurrent[0]);
+
+                    for (int j = 0; j < cellsInMoveList.Count; j++)
+                    {
+                        string[] xyNext = cellsInMoveList[j].name.Split(new char[] { ' ' });
+                        int xNextStep = int.Parse(xyNext[1]);
+                        int yNextStep = int.Parse(xyNext[0]);
+
+                        bool skip = false;
+
+                        for(int k = 0; k < cellsInMoveListForAnomation.Count; k++)
+                        {
+                            for(int l = 0; l < cellsInMoveListForAnomation[k].Count; l++)
+                            {
+                                if (cellsInMoveList[j] == cellsInMoveListForAnomation[k][l]) skip = true;
+                            }
+                        }
+
+                        if(skip) continue;
+
+                        if(Mathf.Abs(xCurrnetStep - xNextStep) + Mathf.Abs(yCurrentSrep - yNextStep) == 1)
+                        {
+                            List<Transform> newList = new List<Transform>(cellsInMoveListForAnomation[i]);
+                            newList.Add(cellsInMoveList[j]);
+
+                            if (cellsInMoveList[j] == cellToFindPath) 
+                            {
+                                newList.RemoveAt(0);
+                                return newList;
+                            } 
+
+                            cellsInMoveListForAnomation.Add(newList);
+                        }
+                    }
+                }
+
+                for(int i = 0; i < count; i++)
+                {
+                    cellsInMoveListForAnomation.RemoveAt(i);
+                }
+
+            }
         }
     }
 }

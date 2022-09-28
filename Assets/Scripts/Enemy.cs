@@ -15,18 +15,29 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float armor = 0;
     [SerializeField] private int magresist = 0;
 
+    private bool isMoving = false;
+    List<Transform> cellsToMoveForAnimaion = new List<Transform>();
+    private float elapsedTime = 0f;
+    private GameObject toCell;
+    private Person.PersonClass player;
+    private int range;
+
     private GameObject cellsParent;
 
     EnemyClass enemyUnit;
     GameManager gameManager;
 
-    private List<GameObject> cellsMoveList = new List<GameObject>();
+    private List<Transform> cellsMoveList = new List<Transform>();
+
+    private SpriteRenderer spriteRenderer;
 
     // Start is called before the first frame update
     void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         cellsParent = GameObject.Find("cellsParent");
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         HealthBar healthBar = transform.GetChild(0).GetChild(0).GetComponent<HealthBar>();
 
@@ -55,10 +66,60 @@ public class Enemy : MonoBehaviour
         StartCoroutine(wait());
     }
 
+    void Update()
+    {
+        if (isMoving)
+        {
+            MoveAnimation();
+        }
+    }
+
     IEnumerator wait()
     {
         yield return new WaitForEndOfFrame();
         enemyUnit.ReversePerson();
+    }
+
+    //Move person to each cell in path
+    void MoveAnimation()
+    {
+        if (cellsToMoveForAnimaion.Count != 0)
+        {
+            if (transform.parent.position.x < cellsToMoveForAnimaion[0].position.x)
+            {
+                if (spriteRenderer.flipX) spriteRenderer.flipX = false;
+                transform.Translate(Vector2.right * Time.deltaTime * 1.5f);
+            }
+            else if (transform.parent.position.x > cellsToMoveForAnimaion[0].position.x)
+            {
+                if (!spriteRenderer.flipX) spriteRenderer.flipX = true;
+                transform.Translate(Vector2.left * Time.deltaTime * 1.5f);
+            }
+            else if (transform.parent.position.y < cellsToMoveForAnimaion[0].position.y)
+            {
+                transform.Translate(Vector2.up * Time.deltaTime * 1.5f);
+            }
+            else if (transform.parent.position.y > cellsToMoveForAnimaion[0].position.y)
+            {
+                transform.Translate(Vector2.down * Time.deltaTime * 1.5f);
+            }
+
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime >= 0.6)
+            {
+                transform.parent = cellsToMoveForAnimaion[0];
+                cellsToMoveForAnimaion.RemoveAt(0);
+                elapsedTime = 0;
+            }
+        }
+        else
+        {
+            isMoving = false;
+            transform.position = new Vector2(toCell.transform.position.x, toCell.transform.position.y + 0.4f);
+            transform.parent = toCell.transform;
+            GetComponent<Animator>().SetBool("Move", false);
+            Attack(player, range);
+        }
     }
 
     //Cell in list which enemy can move
@@ -73,7 +134,7 @@ public class Enemy : MonoBehaviour
         int y = int.Parse(xy[0]);
 
         //Add the cell on which the player is located
-        cellsMoveList.Add(transform.parent.gameObject);
+        cellsMoveList.Add(transform.parent);
 
         //Breadth-first search
         //count of steps for moving to cell
@@ -101,7 +162,7 @@ public class Enemy : MonoBehaviour
                     //skip iteration if this cell already in the list
                     for (int c = 0; c < cellsMoveList.Count; c++)
                     {
-                        if (cell == cellsMoveList[c]) skip = true;
+                        if (cell.transform == cellsMoveList[c]) skip = true;
                     }
 
                     if (skip) continue;
@@ -112,7 +173,7 @@ public class Enemy : MonoBehaviour
 
                     if ((Mathf.Abs(x - x_) + Mathf.Abs(y - y_)) == 1)
                     {
-                        cellsMoveList.Add(cell);
+                        cellsMoveList.Add(cell.transform);
                     }
                 }
             }
@@ -126,7 +187,7 @@ public class Enemy : MonoBehaviour
     void MoveEnemy()
     {
         Transform nearbestPlayer = enemyUnit.LookingForNearbestPerson();
-        Person.PersonClass player = Global.persons.Find(p => p.ObjectPerson == nearbestPlayer.gameObject);
+        player = Global.persons.Find(p => p.ObjectPerson == nearbestPlayer.gameObject);
 
         //get coordinates cell which player stay it
         string[] xyPlayer = nearbestPlayer.parent.name.Split(new char[] { ' ' });
@@ -138,12 +199,13 @@ public class Enemy : MonoBehaviour
         int xEnemy = int.Parse(xy[1]);
         int yEnemy = int.Parse(xy[0]);
 
-        int range = 99;
+        range = 99;
 
         //if player in range one cell, don`t move
         if (Mathf.Abs(xPlayer - xEnemy) + Mathf.Abs(yPlayer - yEnemy) == 1)
         {
             range = 1;
+            Attack(player, range);
         }
 
         //find the nearest cell to the nearest player
@@ -164,19 +226,23 @@ public class Enemy : MonoBehaviour
                 if (Mathf.Abs(xPlayer - xCell_) + Mathf.Abs(yPlayer - yCell_)
                     < Mathf.Abs(xPlayer - xCell) + Mathf.Abs(yPlayer - yCell))
                 {
-                    cellToMove = cellsMoveList[i];
+                    cellToMove = cellsMoveList[i].gameObject;
                     xCell = xCell_;
                     yCell = yCell_;
                     range = Mathf.Abs(xPlayer - xCell_) + Mathf.Abs(yPlayer - yCell_);
                 }
             }
 
-            //Move
-            transform.position = new Vector2(cellToMove.transform.position.x, cellToMove.transform.position.y + 0.4f);
-            transform.parent = cellToMove.transform;
+            //Move with animaton
+            toCell = cellToMove;
+            cellsToMoveForAnimaion = enemyUnit.CellToMoveListForAnimation(cellsMoveList, toCell.transform);
+            elapsedTime = 0f;
+            GetComponent<Animator>().SetBool("Move", true);          
+            isMoving = true;
+            
         }
 
-        Attack(player, range);
+        
     }
 
     //Choose spell and attack player
